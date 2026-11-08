@@ -1,0 +1,26 @@
+{
+  "name": "mabra-proyectos-prototipo-tfg",
+  "version": "1.0.0",
+  "description": "Prototipo tecnológico: Sistema de gestión y trazabilidad para la producción de mobiliario a medida (MABRA Proyectos)",
+  "author": "Santiago Villalba Palmieri (SOFO2889)",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "test:win": "python backend/tests.py",
+    "test:mac": "python3 backend/tests.py"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}

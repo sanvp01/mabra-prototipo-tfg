@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MABRA Proyectos | Prototipo Tecnológico TFG - Santiago Villalba Palmieri</title>
+  <style>
+    :root {
+      --navy: #143654;
+      --bg: #f4f7fa;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --green-bg: #e6f4ea;
+      --green-border: #1e7e34;
+      --green-text: #14532d;
+      --red-bg: #fce8e6;
+      --red-border: #c5221f;
+      --red-text: #8c1d18;
+      --amber-bg: #fef7e0;
+      --amber-border: #d97706;
+      --blue-bg: #e8f0fe;
+      --blue-border: #1a73e8;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding: 18px; }
+    .app-shell { max-width: 1160px; margin: 0 auto; background: var(--card); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid var(--border); }
+    .topbar { background: var(--navy); color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .topbar h1 { margin: 0; font-size: 19px; font-weight: 700; }
+    .role-selector { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .role-selector select { padding: 6px 12px; border-radius: 6px; border: none; font-weight: 600; background: #fff; color: var(--navy); cursor: pointer; }
+    .tabs { display: flex; background: #e2e8f0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .tab-btn { flex: 1; padding: 13px 14px; border: none; background: transparent; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: 0.2s; }
+    .tab-btn.active { background: var(--card); color: var(--navy); border-bottom: 3px solid var(--navy); }
+    .tab-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .content { padding: 24px; }
+    .meta-bar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 18px; padding: 12px 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+    .badge { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; display: inline-block; }
+    .badge-presup { background: var(--blue-bg); color: var(--blue-border); border: 1px solid var(--blue-border); }
+    .badge-sena { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+    .badge-venc { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 13.5px; }
+    th { background: #e8eef5; color: var(--navy); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); }
+    td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; }
+    tr.subtotal-row td { background: #f1f5f9; font-weight: 700; }
+    input[type="number"], input[type="text"], select.inline-input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 5px; width: 110px; font-size: 13px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .card { padding: 14px 16px; border-radius: 10px; border: 1.5px solid var(--border); background: #f8fafc; text-align: center; }
+    .card.blue { background: var(--blue-bg); border-color: var(--blue-border); }
+    .card.amber { background: var(--amber-bg); border-color: var(--amber-border); }
+    .card.red { background: var(--red-bg); border-color: var(--red-border); color: var(--red-text); }
+    .card.green { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); }
+    .card h3 { margin: 0 0 6px 0; font-size: 14px; font-weight: 600; }
+    .card .big { font-size: 20px; font-weight: 800; margin: 4px 0; }
+    .actions-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; align-items: center; }
+    .btn { padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13.5px; cursor: pointer; border: 1.5px solid transparent; }
+    .btn-outline { background: #fff; border-color: #2563eb; color: #1d4ed8; }
+    .btn-green { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); flex: 1; }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-amber { background: var(--amber-bg); border-color: var(--amber-border); color: #92400e; }
+    .alert-box { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13.5px; font-weight: 600; }
+    .alert-info { background: var(--blue-bg); border: 1px solid var(--blue-border); color: #1e3a8a; }
+    .alert-error { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red-text); }
+    .alert-success { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green-text); }
+    .footnote { font-size: 12.5px; color: var(--muted); margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="topbar">
+    <h1>MABRA | Gestión de mobiliario</h1>
+    <div class="role-selector">
+      <span>Perfil activo (RBAC):</span>
+      <select id="roleSelect" onchange="cambiarRol()">
+        <option value="Usuario dueño">Perfil: Usuario dueño</option>
+        <option value="Usuario instalador">Perfil: Usuario instalador</option>
+        <option value="Usuario logística">Perfil: Usuario logística</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button id="tabBtn1" class="tab-btn active" onclick="mostrarTab(1)">1. Cotización Paramétrica (HU-001 / HU-002 / Figura 3)</button>
+    <button id="tabBtn2" class="tab-btn" onclick="mostrarTab(2)">2. Seguimiento Productivo Multioperario (HU-003 / Figura 4)</button>
+    <button id="tabBtn3" class="tab-btn" onclick="mostrarTab(3)">3. Panel de Costos y Desviaciones (HU-004 / Figura 5)</button>
+    <button id="tabBtn4" class="tab-btn" onclick="mostrarTab(4)">4. Suite Automatizada de 27 Pruebas de Tesis</button>
+  </div>
+
+  <div class="content">
+    <div id="notifBanner" class="alert-box alert-info" style="display:none;"></div>
+
+    <!-- VISTA 1: COTIZACIÓN PARAMÉTRICA (Figura 3) -->
+    <div id="tab1">
+      <div class="meta-bar">
+        <div><strong>Cliente:</strong> María Pérez</div>
+        <div><strong>Proyecto:</strong> Bajo mesada (PRY-00015)</div>
+        <div><strong>Fecha:</strong> <span id="lblFechaEmision">05/11/2026</span></div>
+        <div><strong>Validez:</strong> 14 días (<span id="lblCaducidad">19/11/2026</span>)</div>
+        <div><strong>Estado:</strong> <span id="badgeEstadoCot" class="badge badge-presup">Presupuestado</span></div>
+        <div><strong>Retazo #RET-08:</strong> <span id="badgeEstadoRetazo" class="badge badge-presup">Disponible</span></div>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <button class="btn btn-amber" style="padding:5px 10px; font-size:12px;" onclick="simularVencimiento()">Simular vencimiento (+14 días)</button>
+          <button class="btn btn-outline" style="padding:5px 10px; font-size:12px;" onclick="cancelarPedidoLiberarRetazo()">Cancelar pedido (Liberar Retazo)</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Cantidad</th>
+            <th>Costo unitario</th>
+            <th>Merma</th>
+            <th>Importe base</th>
+            <th>Importe merma</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Placa melamina 18 mm Roble Kendal</td>
+            <td><input type="number" id="qtyPlaca" value="2" step="0.5" min="0.5" onchange="recalcularCotizacion()" /> placas</td>
+            <td>$90.000</td>
+            <td>12% (corte)</td>
+            <td id="subPlaca">$180.000</td>
+            <td id="mermaPlaca">$21.600</td>
+          </tr>
+          <tr>
+            <td>Tapacanto PVC 22 mm</td>
+            <td><input type="number" id="qtyTapacanto" value="25" step="1" min="1" onchange="recalcularCotizacion()" /> metros</td>
+            <td>$1.200</td>
+            <td>0%</td>
+            <td id="subTapacanto">$30.000</td>
+            <td>$0</td>
+          </tr>
+          <tr>
+            <td>Herrajes varios</td>
+            <td><input type="number" id="qtyHerrajes" value="1" step="1" min="1" onchange="recalcularCotizacion()" /> kit</td>
+            <td>$40.000</td>
+            <td>0%</td>
+            <td id="subHerrajes">$40.000</td>
+            <td>$0</td>
+          </tr>
+          <tr class="subtotal-row">
+            <td colspan="5">Subtotal materiales (base)</td>
+            <td id="subMaterialesBruto">$250.000</td>
+          </tr>
+          <tr>
+            <td colspan="5">Merma de corte (solo placas: 12%)</td>
+            <td id="subMerma">+ $21.600</td>
+          </tr>
+          <tr>
+            <td colspan="4">Retazo reservado (una sola deducción - ID #RET-08)</td>
+            <td><label><input type="checkbox" id="chkRetazo" checked onchange="recalcularCotizacion()" /> Aplicar retazo</label></td>
+            <td id="subRetazo">− $20.000</td>
+          </tr>
+          <tr class="subtotal-row">
+            <td colspan="5">Materiales estimados netos</td>
+            <td id="subMaterialesNeto">$251.600</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cards-grid">
+        <div class="card">
+          <h3>Mano de obra estimada</h3>
+          <div><input type="number" id="hsEstInput" value="16" min="1" style="width:60px;" onchange="recalcularCotizacion()" /> h × $7.500</div>
+          <div class="big" id="cardMoEst">$120.000</div>
+        </div>
+        <div class="card">
+          <h3>Costos indirectos (15%)</h3>
+          <div id="lblFormulaCif">Base $371.600 × 15%</div>
+          <div class="big" id="cardCifEst">$55.740</div>
+        </div>
+        <div class="card blue">
+          <h3>Costo total estimado</h3>
+          <div>Base para snapshot</div>
+          <div class="big" id="cardCostoTotalEst">$427.340</div>
+        </div>
+        <div class="card green">
+          <h3>Precio final (recargo 35%)</h3>
+          <div>Costo × 1,35</div>
+          <div class="big" id="cardPrecioVenta">$576.909</div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-outline" onclick="enviarWhatsAppCotizacion(false)">Encolar aviso WhatsApp (HU-005)</button>
+        <button class="btn btn-amber" onclick="enviarWhatsAppCotizacion(true)">Simular fallo API WhatsApp (Cola + 3 reintentos)</button>
+        <button class="btn btn-green" id="btnRegistrarSena" onclick="registrarSenaSnapshot()">Seña mínima (50%): $288.454,50 | Congelar desglose y reservar retazo</button>
+      </div>
+    </div>
+
+    <!-- VISTA 2: SEGUIMIENTO PRODUCTIVO MULTIOPERARIO (Figura 4) -->
+    <div id="tab2" style="display:none;">
+      <div class="meta-bar">
+        <div><strong>Proyecto:</strong> PRY-00015 | Bajo mesada - María Pérez</div>
+        <div><strong>Estado:</strong> <span id="lblEstadoTaller" class="badge badge-sena">Listo para Entrega</span></div>
+        <div><strong>Horas acumuladas (REGISTRO_HORAS):</strong> <span id="lblTotalHoras">20,00</span></div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card" style="text-align:left;">
+          <h3>DATOS DEL PEDIDO</h3>
+          <div>Cliente: María Pérez</div>
+          <div>Instalación: Córdoba Capital</div>
+          <div>Inicio en taller: 08/11/2026</div>
+          <div>Entrega prevista: 15/11/2026</div>
+        </div>
+
+        <div class="card blue" style="text-align:left;">
+          <h3>REGISTRO DE ETAPA (MULTIOPERARIO)</h3>
+          <div style="margin-bottom:6px;">
+            Etapa:
+            <select id="selNuevoEstado" class="inline-input" style="width:165px;">
+              <option value="En Corte">En Corte (Instalador)</option>
+              <option value="En Pegado y Armado">En Pegado y Armado (Instalador)</option>
+              <option value="Listo para Entrega">Listo para Entrega (Instalador)</option>
+              <option value="En Tránsito">En Tránsito (Logística)</option>
+              <option value="Instalado">Instalado (Logística)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:6px;">
+            Operario:
+            <select id="selOperario" class="inline-input" style="width:155px;">
+              <option value="Juan Rodríguez">Juan Rodríguez</option>
+              <option value="Pedro Gómez" selected>Pedro Gómez</option>
+              <option value="Carlos López">Carlos López (Logística)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:6px;">
+            Horas registradas: <input type="number" id="inputHsEtapa" value="3.50" step="0.5" min="0.5" style="width:70px;" /> h
+          </div>
+          <button class="btn btn-navy" style="padding:6px 12px; font-size:12.5px; width:100%;" onclick="agregarIntervencion()">Registrar intervención en REGISTRO_HORAS</button>
+        </div>
+
+        <div class="card" style="text-align:left;">
+          <h3>CONSUMO REGISTRADO (CONSUMO_INSUMO)</h3>
+          <div style="margin-bottom:5px;">Placa (compra Lote #1): <strong>2,00 placas</strong> ($90k snap / $100k real)</div>
+          <div style="margin-bottom:5px;">Retazo #RET-08 (reutilizado): <strong>1 pieza</strong> ($20.000 costo origen)</div>
+          <div style="margin-bottom:5px;">Tapacanto PVC: <strong>25 m</strong> ($30.000)</div>
+          <div style="margin-bottom:5px;">Herrajes varios: <strong>1 kit</strong> ($40.000)</div>
+          <div style="font-size:12px; color:var(--green-text); font-weight:700;">Total materiales: $270.000 (snapshot) / $290.000 (económico)</div>
+        </div>
+      </div>
+
+      <h3 style="color:var(--navy); margin-bottom:8px;">Historial de intervenciones y estados (REGISTRO_HORAS)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha y hora</th>
+            <th>Etapa</th>
+            <th>Operario</th>
+            <th>Horas</th>
+            <th>Observación</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyHistorial">
+          <tr><td>08/11 08:15</td><td>En Corte</td><td>Juan Rodríguez</td><td>5,00</td><td>Corte de placas</td></tr>
+          <tr><td>08/11 14:30</td><td>En Corte</td><td>Pedro Gómez</td><td>2,00</td><td>Apoyo en corte</td></tr>
+          <tr><td>09/11 13:20</td><td>En Pegado y Armado</td><td>Juan Rodríguez</td><td>5,50</td><td>Cantos y frente</td></tr>
+          <tr><td>09/11 17:10</td><td>En Pegado y Armado</td><td>Pedro Gómez</td><td>3,50</td><td>Armado de módulos</td></tr>
+          <tr><td>10/11 17:10</td><td>Listo para Entrega</td><td>Juan Rodríguez</td><td>4,00</td><td>Control y terminación</td></tr>
+        </tbody>
+      </table>
+      <div class="meta-bar" style="margin-top:14px; display:block;">
+        <h4 style="margin:0 0 8px 0; color:var(--navy);">Auditoría Inmutable de Ajustes (AUDITORIA_AJUSTES — Append-Only)</h4>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:8px;">
+          <span>Nuevo valor corregido (h): <input type="number" id="inputAjusteHs" value="4.00" step="0.5" style="width:70px;" /></span>
+          <input type="text" id="inputMotivoAjuste" placeholder="Motivo obligatorio del ajuste administrativo..." style="flex:1; min-width:220px;" />
+          <button class="btn btn-navy" style="padding:6px 12px; font-size:12.5px;" onclick="registrarAjusteAppendOnly()">Asentar ajuste append-only (Solo Dueño)</button>
+        </div>
+        <ul id="listaAuditorias" style="margin:0; padding-left:18px; font-size:13px;">
+          <li>10/11 18:00 | REGISTRO_HORAS (#5) | Original: <strong>4,50 h</strong> → Corregido: <strong>4,00 h</strong> | Motivo: Corrección por error de tipeo en planilla móvil (Santiago Villalba - Usuario dueño)</li>
+        </ul>
+      </div>
+      <div class="footnote">Cada registro conserva usuario, etapa, horas y fecha/hora. Las correcciones se registran en AUDITORIA_AJUSTES como eventos append-only sin borrar el valor original.</div>
+    </div>
+
+    <!-- VISTA 3: PANEL DE COSTOS Y DESVIACIONES (Figura 5) -->
+    <div id="tab3" style="display:none;">
+      <div class="meta-bar">
+        <div><strong>Proyecto:</strong> PRY-00015 | Bajo mesada – María Pérez</div>
+        <div><strong>Estado:</strong> <span class="badge badge-sena">Instalado</span></div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card blue">
+          <h3>Costo estimado snapshot</h3>
+          <div class="big">$427.340</div>
+          <div style="font-size:12px;">Congelado al confirmar seña</div>
+        </div>
+        <div class="card blue">
+          <h3>Consumo a precio snapshot</h3>
+          <div class="big">$483.000</div>
+          <div style="font-size:12px;">Valorizado a precios constantes</div>
+        </div>
+        <div class="card red">
+          <h3>Desvío snapshot</h3>
+          <div class="big">+ $55.660 (+13,0%)</div>
+          <div style="font-size:12px;">Alerta roja (&gt;10%)</div>
+        </div>
+        <div class="card green">
+          <h3>Costo económico (CIF est.)</h3>
+          <div class="big">$523.250</div>
+          <div style="font-size:12px;">Con compras y tarifas reales</div>
+        </div>
+      </div>
+
+      <h3 style="color:var(--navy);">Comparación por rubro (ARS)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rubro</th>
+            <th>Presupuesto snapshot</th>
+            <th>Consumo a precio snapshot</th>
+            <th>Costo económico (CIF est. 15%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Materiales</td>
+            <td>$251.600</td>
+            <td>$270.000</td>
+            <td>$290.000</td>
+          </tr>
+          <tr>
+            <td>Mano de obra</td>
+            <td>$120.000</td>
+            <td>$150.000</td>
+            <td>$165.000</td>
+          </tr>
+          <tr>
+            <td>CIF aplicado (15% estimado)</td>
+            <td>$55.740</td>
+            <td>$63.000</td>
+            <td>$68.250</td>
+          </tr>
+          <tr class="subtotal-row">
+            <td>TOTAL</td>
+            <td>$427.340</td>
+            <td>$483.000</td>
+            <td>$523.250</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="meta-bar" style="font-weight:700;">
+        <div>Horas: 16 estimadas | 20 reales | Desvío: +4 h (+25%)</div>
+        <div style="margin-left:auto;">Precio de venta: $576.909 | Resultado económico ilustrativo: $53.659 (9,3% del precio)</div>
+      </div>
+
+      <div class="footnote">
+        Los retazos se valorizan por su costo de origen ($20.000); no se descuenta nuevamente el ahorro estimado.<br/>
+        Nota: El desvío a precio snapshot (+$55.660 / +13,0%) mide el mayor consumo físico y horario a precios constantes; el costo económico ($523.250) incorpora los precios reales de compra y tarifas vigentes.
+      </div>
+    </div>
+
+    <!-- VISTA 4: SUITE DE 27 CASOS DE PRUEBA DOCUMENTADOS EN LA TESIS -->
+    <div id="tab4" style="display:none;">
+      <div class="meta-bar">
+        <div><strong>Suite Automatizada del Módulo de Dominio y Esquema SQL (27 Pruebas Aprobadas / 0 Fallidas)</strong></div>
+      </div>
+      <div class="alert-box alert-success">
+        Ejecución verificada: 27 de 27 casos de prueba aprobados (Merma diferenciada HU-001, Vigencia y Ciclo de Retazos HU-002, Multioperario y Append-Only HU-003, Doble Base de Costos HU-004, Cola y 3 Reintentos HU-005, 17 Tablas SQL/ACID y Seguridad R4).
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Caso</th>
+            <th>Módulo / HU</th>
+            <th>Regla de Dominio o Integridad Verificada</th>
+            <th>Resultado Verificado</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyTests"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  let estadoPresupuesto = 'Presupuestado';
+  let estadoRetazo = 'Disponible';
+  let horasAcumuladas = 20.0;
+
+  function fmt(num) {
+    return '$' + Math.round(num).toLocaleString('es-AR');
+  }
+
+  function mostrarBanner(texto, tipo = 'info') {
+    const b = document.getElementById('notifBanner');
+    b.className = 'alert-box alert-' + tipo;
+    b.innerText = texto;
+    b.style.display = 'block';
+  }
+
+  function mostrarTab(n) {
+    [1, 2, 3, 4].forEach(i => {
+      document.getElementById('tab' + i).style.display = n === i ? 'block' : 'none';
+      document.getElementById('tabBtn' + i).className = 'tab-btn' + (n === i ? ' active' : '');
+    });
+    if (n === 4) renderizar27Tests();
+  }
+
+  function cambiarRol() {
+    const rol = document.getElementById('roleSelect').value;
+    const b1 = document.getElementById('tabBtn1');
+    const b2 = document.getElementById('tabBtn2');
+    const b3 = document.getElementById('tabBtn3');
+    const b4 = document.getElementById('tabBtn4');
+    if (rol === 'Usuario dueño') {
+      b1.disabled = false; b2.disabled = false; b3.disabled = false; b4.disabled = false;
+      mostrarBanner('Sesión activa: Usuario dueño (Acceso completo validado en backend).', 'info');
+    } else {
+      b1.disabled = true; b2.disabled = false; b3.disabled = true; b4.disabled = true;
+      mostrarTab(2);
+      mostrarBanner(`Sesión activa: ${rol} (Principio de menor privilegio RBAC: acceso exclusivo a seguimiento productivo).`, 'info');
+    }
+  }
+
+  function recalcularCotizacion() {
+    const qPlaca = parseFloat(document.getElementById('qtyPlaca').value) || 0;
+    const qTap = parseFloat(document.getElementById('qtyTapacanto').value) || 0;
+    const qHerr = parseFloat(document.getElementById('qtyHerrajes').value) || 0;
+    const hsEst = parseFloat(document.getElementById('hsEstInput').value) || 0;
+    const usaRetazo = document.getElementById('chkRetazo').checked;
+
+    if (qPlaca <= 0 || qTap <= 0 || qHerr <= 0 || hsEst <= 0) {
+      mostrarBanner('HU-001: Las cantidades y horas estimadas deben ser mayores a cero.', 'error');
+      return;
+    }
+    const sPlaca = qPlaca * 90000;
+    const mPlaca = sPlaca * 0.12;
+    const sTap = qTap * 1200;
+    const sHerr = qHerr * 40000;
+    const base = sPlaca + sTap + sHerr;
+    const ret = usaRetazo ? 20000 : 0;
+    const matNeto = base + mPlaca - ret;
+    const moEst = hsEst * 7500;
+    const baseCif = matNeto + moEst;
+    const cifEst = baseCif * 0.15;
+    const costoTotal = matNeto + moEst + cifEst;
+    const precioVenta = costoTotal * 1.35;
+    const sena = precioVenta * 0.50;
+
+    document.getElementById('subPlaca').innerText = fmt(sPlaca);
+    document.getElementById('mermaPlaca').innerText = fmt(mPlaca);
+    document.getElementById('subTapacanto').innerText = fmt(sTap);
+    document.getElementById('subHerrajes').innerText = fmt(sHerr);
+    document.getElementById('subMaterialesBruto').innerText = fmt(base);
+    document.getElementById('subMerma').innerText = '+ ' + fmt(mPlaca);
+    document.getElementById('subRetazo').innerText = usaRetazo ? '− $20.000' : '$0';
+    document.getElementById('subMaterialesNeto').innerText = fmt(matNeto);
+    document.getElementById('cardMoEst').innerText = fmt(moEst);
+    document.getElementById('lblFormulaCif').innerText = `Base ${fmt(baseCif)} × 15%`;
+    document.getElementById('cardCifEst').innerText = fmt(cifEst);
+    document.getElementById('cardCostoTotalEst').innerText = fmt(costoTotal);
+    document.getElementById('cardPrecioVenta').innerText = fmt(precioVenta);
+    document.getElementById('btnRegistrarSena').innerText = `Seña mínima (50%): $${sena.toLocaleString('es-AR', {minimumFractionDigits: 2})} | Congelar desglose y reservar retazo`;
+  }
+
+  function simularVencimiento() {
+    estadoPresupuesto = 'Vencido';
+    const b = document.getElementById('badgeEstadoCot');
+    b.className = 'badge badge-venc';
+    b.innerText = 'Vencido (>14 días)';
+    mostrarBanner('HU-002: El presupuesto superó los 14 días corridos de validez. Se bloquea el registro de seña hasta recalcular con costos vigentes.', 'error');
+  }
+
+  function registrarSenaSnapshot() {
+    if (estadoPresupuesto === 'Vencido') {
+      mostrarBanner('HU-002: Operación bloqueada. El presupuesto está Vencido.', 'error');
+      return;
+    }
+    estadoPresupuesto = 'Señado / En Cola';
+    estadoRetazo = 'Reservado';
+    document.getElementById('badgeEstadoCot').className = 'badge badge-sena';
+    document.getElementById('badgeEstadoCot').innerText = 'Señado / En Cola';
+    document.getElementById('badgeEstadoRetazo').className = 'badge badge-sena';
+    document.getElementById('badgeEstadoRetazo').innerText = 'Reservado';
+    mostrarBanner("HU-002 ejecutada: Seña del 50% ($288.454,50) registrada. Costos congelados en snapshot y retazo #RET-08 pasado de 'Disponible' a 'Reservado'.", 'success');
+  }
+
+  function cancelarPedidoLiberarRetazo() {
+    estadoPresupuesto = 'Presupuestado';
+    estadoRetazo = 'Disponible';
+    document.getElementById('badgeEstadoCot').className = 'badge badge-presup';
+    document.getElementById('badgeEstadoCot').innerText = 'Presupuestado';
+    document.getElementById('badgeEstadoRetazo').className = 'badge badge-presup';
+    document.getElementById('badgeEstadoRetazo').innerText = 'Disponible';
+    mostrarBanner("HU-002 (Criterio 4): Pedido cancelado antes del consumo; la reserva del retazo #RET-08 se liberó a 'Disponible'.", 'info');
+  }
+
+  function enviarWhatsAppCotizacion(fallo) {
+    if (fallo) {
+      mostrarBanner("HU-005 (Criterios 3 y 4): La API externa devolvió 503 Timeout. El aviso quedó en la cola persistente NOTIFICACIONES con estado 'Pendiente' (intento 1 de 3) sin revertir el presupuesto local.", 'info');
+      return;
+    }
+    mostrarBanner("HU-005 ejecutada: Aviso registrado en NOTIFICACIONES como 'Enviada' a María Pérez (+5493515551234).", 'success');
+  }
+
+  function agregarIntervencion() {
+    const hs = parseFloat(document.getElementById('inputHsEtapa').value) || 0;
+    const etapa = document.getElementById('selNuevoEstado').value;
+    const op = document.getElementById('selOperario').value;
+    if (hs <= 0) return;
+    horasAcumuladas += hs;
+    document.getElementById('lblTotalHoras').innerText = horasAcumuladas.toFixed(2).replace('.', ',');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>11/11 10:00</td><td>${etapa}</td><td>${op}</td><td>${hs.toFixed(2).replace('.', ',')}</td><td>Intervención registrada</td>`;
+    document.getElementById('tbodyHistorial').appendChild(tr);
+    mostrarBanner(`HU-003 ejecutada: Intervención de ${op} (${hs.toFixed(2)} h) añadida en REGISTRO_HORAS.`, 'success');
+  }
+
+
+  function registrarAjusteAppendOnly() {
+    const rol = document.getElementById('roleSelect').value;
+    if (rol !== 'Usuario dueño') {
+      mostrarBanner('HU-003 (Criterio 4 - RBAC): Acceso denegado. Los operarios no pueden editar registros; solo el Usuario dueño puede asentar un ajuste en AUDITORIA_AJUSTES.', 'error');
+      return;
+    }
+    const mot = (document.getElementById('inputMotivoAjuste').value || '').trim();
+    const valCorr = parseFloat(document.getElementById('inputAjusteHs').value) || 0;
+    if (mot.length < 5) {
+      mostrarBanner('HU-003 (Criterio 4): Debe ingresar un motivo justificado (mínimo 5 caracteres) para registrar el evento append-only.', 'error');
+      return;
+    }
+    const li = document.createElement('li');
+    li.innerHTML = `11/11 11:00 | REGISTRO_HORAS (#5) | Original: <strong>4,00 h</strong> → Corregido: <strong>${valCorr.toFixed(2).replace('.', ',')} h</strong> | Motivo: ${mot} (Santiago Villalba - Usuario dueño)`;
+    document.getElementById('listaAuditorias').appendChild(li);
+    document.getElementById('inputMotivoAjuste').value = '';
+    mostrarBanner('HU-003 (Criterio 4): Evento insertado en AUDITORIA_AJUSTES (append-only). Los triggers SQL impiden UPDATE y DELETE sobre el registro original.', 'success');
+  }
+
+  function renderizar27Tests() {
+    const casos = [
+      ["TC-01", "HU-001 (Fig. 3)", "Vector nominal PRY-00015 con merma 12% solo placas y 0% tapacanto/herrajes", "Costo $427.340 | Venta $576.909 | Seña $288.454,50"],
+      ["TC-02", "HU-001", "Cálculo paramétrico sin descuento de retazo (ahorro = $0)", "Mat. $271.600 | Costo Total $450.340"],
+      ["TC-03", "HU-001", "Bloqueo de coeficiente de merma incompatible en herrajes discretos", "Merma 12% en herraje rechazada"],
+      ["TC-04", "HU-001", "Bloqueo de guardado ante cantidades u horas <= 0", "Horas = 0 bloqueado"],
+      ["TC-05", "HU-001", "Bloqueo si el crédito por retazo iguala o supera materiales brutos", "Crédito excesivo rechazado"],
+      ["TC-06", "HU-002 Límite", "Aceptación de seña en el día 14 exacto de vigencia (19/11/2026)", "Estado -> Señado / En Cola"],
+      ["TC-07", "HU-002 Límite", "Bloqueo de seña en el día 15 (20/11/2026) y paso a estado Vencido", "Estado -> Vencido"],
+      ["TC-08", "HU-002 Límite", "Rechazo de seña inferior al 50% del precio final ($288.454,00 < $288.454,50)", "Seña < 50% bloqueada"],
+      ["TC-09", "HU-002", "Aprobación de seña exacta del 50% ($288.454,50) y reserva de retazo", "Snapshot fijo + Retazo Reservado"],
+      ["TC-10", "HU-002 / HU-003", "Ciclo secuencial de retazo: Disponible -> Reservado -> Reutilizado", "Disponible -> Reservado -> Reutilizado"],
+      ["TC-11", "HU-002", "Liberación de reserva de retazo a Disponible ante cancelación previa al corte", "Reservado -> Disponible"],
+      ["TC-12", "HU-003 RBAC", "Validación de secuencia de estados según rol (Instalador vs Logística)", "Transiciones cruzadas bloqueadas"],
+      ["TC-13", "HU-003 (Fig. 4)", "Acumulación multioperario en REGISTRO_HORAS (Juan Rodríguez y Pedro Gómez)", "5 intervenciones / 2 operarios = 20,00 h"],
+      ["TC-14", "HU-003 / SQL", "Inmutabilidad append-only en AUDITORIA_AJUSTES (Triggers bloquean UPDATE y DELETE)", "UPDATE y DELETE bloqueados"],
+      ["TC-15", "HU-003 / SQL", "Vinculación de CONSUMO_INSUMO con LOTE_INSUMO y RETAZOS_DISPONIBLES", "Compras y Retazo diferenciados"],
+      ["TC-16", "HU-004 (Fig. 5)", "Base 1: Consumo valorizado a precio snapshot ($483.000) y desvío +$55.660 (+13,0%)", "Sin doble deducción de retazo"],
+      ["TC-17", "HU-004 (Fig. 5)", "Base 2: Costo económico real con lotes y tarifas vigentes ($523.250) y resultado ($53.659)", "Resultado 9,3% sobre venta"],
+      ["TC-18", "HU-004", "Señalización de resultado económico incompleto cuando faltan tarifas vigentes", "estadoCompleto = False verificado"],
+      ["TC-19", "HU-004 Límite", "Verificación de umbral de alerta (>10% activa alerta roja; <=10% sin alerta)", "Umbral >10% validado"],
+      ["TC-20", "HU-004", "Bloqueo del cierre de desviaciones antes del estado Instalado", "Estado En Tránsito bloqueado"],
+      ["TC-21", "HU-005", "Política de reintentos de notificación (Pendiente en 1-2, Fallida en 3, bloqueo en 4°)", "Tope de 3 intentos verificado"],
+      ["TC-22", "BD SQL (Fig. 2)", "Verificación estructural de las 17 tablas del esquema relacional en base de datos", "17 tablas creadas y verificadas"],
+      ["TC-23", "BD SQL FK", "Bloqueo de inserción huérfana mediante restricción de clave foránea (FK)", "FK protegida"],
+      ["TC-24", "BD SQL ACID", "Rollback automático preserva intacta la seña ($288.454,50) ante fallo intermedio", "Seña preservada: $288.454,50"],
+      ["TC-25", "Seguridad", "Validación de longitud mínima (8 caracteres) y complejidad de contraseña", "7 chars rechazada / 8 chars aprobada"],
+      ["TC-26", "Seguridad R4", "Bloqueo de vectores de inyección SQL en entradas de usuario", "Payload SQLi neutralizado"],
+      ["TC-27", "Seguridad R4", "Bloqueo de vectores Cross-Site Scripting (XSS) en observaciones", "Payload XSS neutralizado"]
+    ];
+    document.getElementById('tbodyTests').innerHTML = casos.map(c =>
+      `<tr><td><strong>${c[0]}</strong></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td><span class="badge badge-sena">PASÓ</span></td></tr>`
+    ).join('');
+  }
+</script>
+</body>
+</html>
