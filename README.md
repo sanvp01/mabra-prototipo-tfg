@@ -247,7 +247,3 @@ Para evolucionar el prototipo a una solución operativa será necesario, entre o
 - `Demo_Interactiva_MABRA.html`: demo ejecutable localmente.
 - `Esquema_Base_Datos_MABRA.sql`: modelo relacional.
 - El documento académico de Entrega 4 y el video de 3 a 5 minutos deben compartirse mediante el enlace de repositorio o carpeta pública indicado en la entrega institucional.
-
----
-
-**Nota de alcance:** este repositorio documenta un prototipo académico y sus artefactos verificables. Las modalidades de demo, pruebas automatizadas, API de demostración y esquema SQL tienen alcances diferentes; no se afirma que constituyan una solución productiva integrada.
